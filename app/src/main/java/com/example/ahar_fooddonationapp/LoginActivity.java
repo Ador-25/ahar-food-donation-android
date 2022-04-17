@@ -56,11 +56,12 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(LoginActivity.this);
         progressDialog.setTitle("Signing in");
         progressDialog.setMessage("Signing in your Account");
-       loginButton.setOnClickListener(new View.OnClickListener() {
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                signUpText.setText("HELLO");
+                Intent intent=new Intent(LoginActivity.this
+                        ,HomeActivity.class);
+                startActivity(intent);
             }
 
         });
@@ -70,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent= new Intent(LoginActivity.this,SignUpActivity.class);
-                setIntent(intent);
+                startActivity(intent);
             }
         });
     }

@@ -68,6 +68,14 @@ public class SignUpActivity extends AppCompatActivity {
                 doPostRequest();
             }
         });
+        activitySignUpBinding.btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SignUpActivity.this
+                ,LoginActivity.class);
+                startActivity(intent);
+            }
+        });
     }
     private void doPostRequest() {
         OkHttpClient client=new OkHttpClient();

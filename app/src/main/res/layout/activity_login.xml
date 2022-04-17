@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
+    android:background="@color/white"
     tools:context=".LoginActivity">
     <LinearLayout
         android:layout_width="match_parent"
@@ -70,6 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="7dp"
             android:gravity="center"
+            android:textColor="@color/white"
             android:text="Signup with Phone" />
 
     </LinearLayout>
