@@ -2,6 +2,8 @@ package com.example.ahar_fooddonationapp.Models;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.ahar_fooddonationapp.OrganizationDetailActivity;
 import com.example.ahar_fooddonationapp.R;
 
 import java.util.List;
@@ -41,7 +44,14 @@ public class OrganizationAdapter extends RecyclerView.Adapter<OrganizationAdapte
         holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent= new Intent(context, OrganizationDetailActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("name",org.getOrganizationName());
+                bundle.putString("email",org.getOrganizationEmail());
+                bundle.putString("phone",org.getOrganizationPhone());
+                bundle.putString("location",org.getOrganizationLocation());
+                intent.putExtras(bundle);
+                context.startActivity(intent);
             }
         });
     }

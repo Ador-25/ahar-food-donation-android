@@ -36,7 +36,7 @@
             android:src="@drawable/ic_baseline_search_24"
             android:layout_margin="3dp"
             android:clickable="true"
-            android:tint="#00F8E0"
+            android:tint="#727776"
             >
         </ImageView>
 
@@ -47,7 +47,7 @@
             android:src="@drawable/ic_baseline_edit_location_24"
             android:layout_margin="3dp"
             android:clickable="true"
-            android:tint="#00FFE6"
+            android:tint="#727776"
 
             >
         </ImageView>
@@ -70,11 +70,6 @@
 
 
             />
-        <Button
-            android:id="@+id/btnGetLocation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Get Location" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -89,7 +84,8 @@
                 android:layout_margin="7dp"
                 android:text="Ogranizations"
                 android:id="@+id/btnOrganizations"
-                android:textColor="#00FFE6"
+                android:textColor="#727776"
+                android:textStyle="bold"
                 android:backgroundTint="@color/white"
 
                 >
@@ -102,7 +98,8 @@
                 android:layout_margin="7dp"
                 android:text="Donations"
                 android:id="@+id/btnDonations"
-                android:textColor="#00FFE6"
+                android:textColor="#727776"
+                android:textStyle="bold"
                 android:backgroundTint="@color/white"
                 >
 
@@ -110,35 +107,6 @@
         </LinearLayout>
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/layoutLocationDisplayLL"
-        android:id="@+id/recyclerview"
-        android:visibility="visible"
-
->
-
-    </androidx.recyclerview.widget.RecyclerView>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/layoutLocationDisplayLL"
-        android:visibility="gone"
-        android:id="@+id/secondView"
-        >
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="SecondView"
-
-            >
-
-        </TextView>
-
-    </LinearLayout>
 
 
 

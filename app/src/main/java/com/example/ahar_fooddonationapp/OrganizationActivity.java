@@ -1,6 +1,5 @@
 package com.example.ahar_fooddonationapp;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -8,7 +7,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,20 +18,14 @@ import android.location.LocationRequest;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ahar_fooddonationapp.Models.Organization;
 import com.example.ahar_fooddonationapp.Models.OrganizationAdapter;
 import com.example.ahar_fooddonationapp.databinding.ActivityHomeBinding;
-import com.example.ahar_fooddonationapp.databinding.ActivitySignUpBinding;
-import com.google.android.gms.location.FusedLocationProviderClient;
+import com.example.ahar_fooddonationapp.databinding.ActivityOrganizationBinding;
 import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -51,69 +43,34 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class HomeActivity extends AppCompatActivity {
+public class OrganizationActivity extends AppCompatActivity {
+
     List<Organization> organizationsList= new ArrayList();
-    ArrayList<String> headers= new ArrayList();
-    ActivityHomeBinding activityHomeBinding;
+    TextView showLocation;
+
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private static final int REQUEST_LOCATION = 1;
     LocationManager locationManager;
     String latitude, longitude;
+    double lg=0,lt=0;
     private String name="";
+    RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activityHomeBinding = ActivityHomeBinding.inflate(getLayoutInflater());
-        setContentView(activityHomeBinding.getRoot());
+        setContentView(R.layout.activity_organization);
+        recyclerView=findViewById(R.id.recyclerviewOrg);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        fetchOrganizations();
         ActivityCompat.requestPermissions( this,
                 new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-        activityHomeBinding.getLocationIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    OnGPS();
-                } else {
-                    getLocation();
-                }
-            }
-        });
-        activityHomeBinding.searchLocationIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(HomeActivity.this,
-                        "Searching for  .." +activityHomeBinding.searchOrgET.getText().toString(),
-                        Toast.LENGTH_SHORT
-                         )
-                        .show();
-            }
-        });
-        activityHomeBinding.btnDonations.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //activityHomeBinding.lvhome.setVisibility(view.INVISIBLE);
-                //activityHomeBinding.secondView.setVisibility(view.VISIBLE);
-                Toast.makeText(HomeActivity.this,
-                        "HELLO CLICKED",
-                        Toast.LENGTH_SHORT
-                )
-                        .show();
 
-            }
-        });
-        activityHomeBinding.btnOrganizations.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //activityHomeBinding.secondView.setVisibility(view.INVISIBLE);
-                //activityHomeBinding.lvhome.setVisibility(view.VISIBLE);
-                Intent intent= new Intent(HomeActivity.this,OrganizationActivity.class);
-                startActivity(intent);
-            }
-        });
     }
+
     private String getCityName(double lon, double lat){
-        String cityName= "NOT FOUND";
+        String cityName= "Dhaka";
         Geocoder gcd= new Geocoder(getBaseContext(), Locale.getDefault());
         try{
             List<Address> addresses = gcd.getFromLocation(lat,lon,10);
@@ -151,8 +108,8 @@ public class HomeActivity extends AppCompatActivity {
     }
     private void getLocation() {
         if (ActivityCompat.checkSelfPermission(
-                HomeActivity.this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                HomeActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                OrganizationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                OrganizationActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
         }
         else {
@@ -162,21 +119,83 @@ public class HomeActivity extends AppCompatActivity {
                 double longi = locationGPS.getLongitude();
                 latitude = String.valueOf(lat);
                 longitude = String.valueOf(longi);
-                activityHomeBinding.showLocation.setText(getCityName(longi,lat));
+                showLocation.setText(getCityName(longi,lat));
             } else {
                 double lat = 23.777176;
                 double longi = 90.399452;
                 latitude = String.valueOf(lat);
                 longitude = String.valueOf(longi);
-                activityHomeBinding.showLocation.setText(getCityName(longi,lat));
+                showLocation.setText(getCityName(longi,lat));
             }
         }
     }
+    private void fetchOrganizations(){
+
+        OkHttpClient client= new OkHttpClient();
+        //https://api.json-generator.com/templates/7Ixas8byUD7_/data
+        String url="http://192.168.0.102:8080/api/organization/near-organizations/"+lg+"/"+lt;
+        Request reqest=new Request.Builder()
+                .url(url)
+                .build();
+        client.newCall(reqest).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                OrganizationActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        showLocation.setText(e.getMessage().toString());
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if(response.isSuccessful()){
+                    String res= response.body().string();
+                    OrganizationActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONArray jsonArray = new JSONArray(res);
+                                for(int i=0;i<jsonArray.length();i++){
+                                    JSONObject js= jsonArray.getJSONObject(i);
+                                    String email=jsonArray
+                                            .getJSONObject(i)
+                                            .get("organizationEmail")+" ";
+                                    String name=jsonArray
+                                            .getJSONObject(i)
+                                            .get("organizationName")+" ";
+                                    String phone=jsonArray
+                                            .getJSONObject(i)
+                                            .get("phoneNumber")+" ";
+                                    String location=jsonArray
+                                            .getJSONObject(i)
+                                            .get("location")+" ";
+                                    Organization temp= new Organization(name,email,phone,location," ");
+                                    organizationsList.add(temp);
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            finally {
+                                try{
+                                    OrganizationAdapter adapter = new OrganizationAdapter(OrganizationActivity.this,organizationsList);
+                                    recyclerView.setAdapter(adapter);
+                                }
+                                catch (Exception e){
+                                    showLocation=findViewById(R.id.locationTextOrg);
+                                    showLocation.setText(e.getMessage().toString()+" "+organizationsList.size());
+                                }
+
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
 
 
-
-
-
-
+    }
 }
-
